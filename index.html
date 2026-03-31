@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Taekwondo Poomsae Draw</title>
+    <style>
+        /* =====================================================
+           CSS VARIABLES — change colors here to re-theme
+        ===================================================== */
+        :root {
+            --blue-dark:  #0d1f3c;
+            --blue:       #1a3a6b;
+            --blue-light: #2a5298;
+            --red:        #c0392b;
+            --red-light:  #e74c3c;
+            --gold:       #f39c12;
+            --white:      #ffffff;
+        }
+
+        /* =====================================================
+           RESET & BASE
+        ===================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(160deg, var(--blue-dark) 0%, var(--blue) 60%, var(--blue-dark) 100%);
+            min-height: 100vh;
+            color: var(--white);
+            overflow: hidden;  /* no scrollbars — fullscreen feel */
+        }
+
+        /* =====================================================
+           SCREEN SYSTEM
+           Each <div class="screen"> is a full-page "slide".
+           Only the one with class "active" is visible.
+        ===================================================== */
+        .screen {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0; left: 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 60px;
+        }
+        .screen.active { display: flex; }
+
+        /* =====================================================
+           TYPOGRAPHY HELPERS
+        ===================================================== */
+        .page-title {
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .page-sub {
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+            color: rgba(255,255,255,0.55);
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* =====================================================
+           WELCOME SCREEN
+        ===================================================== */
+        .welcome-logo {
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            text-align: center;
+            line-height: 1.1;
+        }
+        .welcome-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.6rem);
+            color: var(--gold);
+            letter-spacing: 3px;
+            margin: 14px 0 50px;
+        }
+        /* Red divider stripe */
+        .divider {
+            width: 180px;
+            height: 5px;
+            background: var(--red);
+            border-radius: 3px;
+            margin: 0 auto 50px;
+        }
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+        /* Main CTA button (red) */
+        .btn-primary {
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 18px 55px;
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 18px rgba(192,57,43,0.45);
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--red-light);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(192,57,43,0.65);
+        }
+        .btn-primary:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        /* Ghost / secondary button */
+        .btn-ghost {
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            border: 1.5px solid rgba(255,255,255,0.35);
+            padding: 11px 28px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            margin-top: 22px;
+        }
+        .btn-ghost:hover {
+            border-color: white;
+            color: white;
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* Fixed corner buttons (back / fullscreen) */
+        .corner-btn {
+            position: fixed;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: white;
+            padding: 9px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            z-index: 100;
+        }
+        .corner-btn:hover { background: rgba(255,255,255,0.18); }
+        #btn-back       { top: 22px; left: 22px; }
+        #btn-fullscreen { top: 22px; right: 22px; }
+
+        /* =====================================================
+           SELECTION CARDS  (age groups & belt levels)
+        ===================================================== */
+        .cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            justify-content: center;
+            max-width: 960px;
+        }
+
+        .sel-card {
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.18);
+            border-radius: 12px;
+            padding: 22px 32px;
+            cursor: pointer;
+            text-align: center;
+            min-width: 185px;
+            transition: all 0.2s;
+        }
+        .sel-card:hover {
+            background: rgba(255,255,255,0.14);
+            border-color: var(--red-light);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .sel-card.selected {
+            background: var(--red);
+            border-color: var(--red-light);
+            box-shadow: 0 6px 20px rgba(192,57,43,0.5);
+        }
+        .card-label { font-size: 1.2rem; font-weight: 700; }
+        .card-sub   { font-size: 0.78rem; opacity: 0.7; margin-top: 4px; }
+
+        /* Colored dot showing belt color */
+        .belt-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            border: 2.5px solid rgba(255,255,255,0.4);
+        }
+
+        /* =====================================================
+           DRAW SCREEN
+        ===================================================== */
+        /* Info badge showing selected division */
+        .division-badge {
+            background: rgba(255,255,255,0.09);
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-size: clamp(0.85rem, 1.5vw, 1rem);
+            margin-bottom: 44px;
+            letter-spacing: 1px;
+        }
+
+        /* Two round columns side by side */
+        .rounds-row {
+            display: flex;
+            gap: 50px;
+            align-items: flex-start;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .round-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        .round-label {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* The result box that shows the poomsae name */
+        .result-box {
+            width: clamp(260px, 30vw, 400px);
+            height: clamp(100px, 14vh, 150px);
+            background: rgba(0,0,0,0.35);
+            border: 3px solid rgba(255,255,255,0.18);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1.4rem, 3vw, 2.4rem);
+            font-weight: 800;
+            overflow: hidden;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        /* Gold glow while spinning */
+        .result-box.spinning {
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(243,156,18,0.45);
+        }
+        /* Red glow after reveal */
+        .result-box.revealed {
+            border-color: var(--red-light);
+            box-shadow: 0 0 45px rgba(231,76,60,0.55);
+            animation: pop 0.4s ease;
+        }
+        @keyframes pop {
+            0%   { transform: scale(0.95); }
+            60%  { transform: scale(1.06); }
+            100% { transform: scale(1); }
+        }
+
+        .placeholder-text {
+            color: rgba(255,255,255,0.22);
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            font-weight: 400;
+        }
+
+        /* Small pool hint text below each box */
+        .pool-hint {
+            font-size: clamp(0.65rem, 1vw, 0.78rem);
+            color: rgba(255,255,255,0.35);
+            text-align: center;
+            max-width: clamp(260px, 30vw, 400px);
+            line-height: 1.5;
+        }
+
+        /* Keyboard hint shown at bottom of draw screen */
+        .key-hint {
+            margin-top: 30px;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+        }
+        kbd {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 4px;
+            padding: 2px 7px;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ================================================================
+     FIXED CORNER BUTTONS  (always on top, shown only on draw screen)
+================================================================ -->
+<button class="corner-btn" id="btn-back"       onclick="goBack()"            style="display:none">← Change Division</button>
+<button class="corner-btn" id="btn-fullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+
+
+<!-- ================================================================
+     SCREEN 1 — WELCOME
+================================================================ -->
+<div class="screen active" id="screen-welcome">
+    <div class="welcome-logo">Taekwondo<br>Poomsae</div>
+    <div class="welcome-subtitle">Draw System</div>
+    <div class="divider"></div>
+    <button class="btn-primary" onclick="goToAge()">Begin Draw</button>
+</div>
+
+
+<!-- ================================================================
+     SCREEN 2 — SELECT AGE GROUP
+================================================================ -->
+<div class="screen" id="screen-age">
+    <div class="page-title">Select Age Division</div>
+    <div class="page-sub">Choose the competitor's age group</div>
+    <div class="cards-grid" id="age-cards">
+        <!-- Populated by buildAgeCards() in JS -->
+    </div>
+    <button class="btn-ghost" onclick="goToWelcome()">← Back</button>
+</div>
+
+
+<!-- ================================================================
+     SCREEN 3 — SELECT BELT LEVEL
+================================================================ -->
+<div class="screen" id="screen-belt">
+    <div class="page-title">Select Belt Level</div>
+    <div class="page-sub">Choose the competitor's rank</div>
+    <div class="cards-grid" id="belt-cards">
+        <!-- Populated by buildBeltCards() in JS -->
+    </div>
+    <button class="btn-ghost" onclick="goToAge()">← Back</button>
+</div>
+
+
+<!-- ================================================================
+     SCREEN 4 — DRAW
+================================================================ -->
+<div class="screen" id="screen-draw">
+
+    <div class="page-title">Poomsae Draw</div>
+
+    <!-- Shows e.g. "Cadet / Junior  •  World Class (Black Belt)" -->
+    <div class="division-badge" id="division-badge">—</div>
+
+    <!-- Round 1 and Round 2 side by side -->
+    <div class="rounds-row">
+
+        <!-- ROUND 1 -->
+        <div class="round-col">
+            <div class="round-label">Round 1</div>
+            <div class="result-box" id="box-r1">
+                <span class="placeholder-text">Press Draw</span>
+            </div>
+            <div class="pool-hint" id="hint-r1"></div>
+            <button class="btn-primary" id="btn-r1" onclick="drawRound(1)">Draw Round 1</button>
+        </div>
+
+        <!-- ROUND 2 -->
+        <div class="round-col">
+            <div class="round-label">Round 2</div>
+            <div class="result-box" id="box-r2">
+                <span class="placeholder-text">Press Draw</span>
+            </div>
+            <div class="pool-hint" id="hint-r2"></div>
+            <!-- Disabled until Round 1 is drawn -->
+            <button class="btn-primary" id="btn-r2" onclick="drawRound(2)" disabled>Draw Round 2</button>
+        </div>
+
+    </div>
+
+    <!-- Reset keeps same division but clears both draws -->
+    <button class="btn-ghost" onclick="resetDraws()" style="margin-top:30px">↺ Reset Draws</button>
+
+    <!-- Keyboard shortcut hint -->
+    <div class="key-hint">
+        <kbd>Space</kbd> or <kbd>Enter</kbd> — next draw &nbsp;|&nbsp;
+        <kbd>R</kbd> — reset
+    </div>
+</div>
+
+
+<!-- ================================================================
+     JAVASCRIPT
+================================================================ -->
+<script>
+
+    // ==============================================================
+    //  POOMSAE POOL DATA
+    //  Organized as: POOLS[ageGroupId][beltLevelId] = [array of poomsae]
+    //
+    //  Belt level IDs:
+    //    yellow     → Taegeuk 1-2
+    //    green      → Taegeuk 1-4
+    //    blue       → Taegeuk 3-6
+    //    red        → Taegeuk 4-8
+    //    worldclass → Black Belt / Dan (varies by age group)
+    // ==============================================================
+    const POOLS = {
+
+        // ---- UNDER 12  (Elementary, 10-11 yrs) ----
+        under12: {
+            yellow:     ['Taegeuk 1', 'Taegeuk 2'],
+            green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
+            blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
+            red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
+            // 1st Dan / Poom: Taegeuk 2-8 + Koryo
+            worldclass: ['Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5',
+                         'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8', 'Koryo']
+        },
+
+        // ---- CADET / JUNIOR  (13-17 yrs) ----
+        cadet: {
+            yellow:     ['Taegeuk 1', 'Taegeuk 2'],
+            green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
+            blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
+            red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
+            // 1st-3rd Dan: Taegeuk 4-8, Koryo, Keumgang, Taebaek
+            worldclass: ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7',
+                         'Taegeuk 8', 'Koryo', 'Keumgang', 'Taebaek']
+        },
+
+        // ---- SENIOR 1  (18-30 yrs) ----
+        senior1: {
+            yellow:     ['Taegeuk 1', 'Taegeuk 2'],
+            green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
+            blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
+            red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
+            // 1st-4th Dan: Taegeuk 6-8, Koryo, Keumgang, Taebaek, Pyongwon, Sipjin
+            worldclass: ['Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8',
+                         'Koryo', 'Keumgang', 'Taebaek', 'Pyongwon', 'Sipjin']
+        },
+
+        // ---- SENIOR 2  (31-40 yrs) ----
+        senior2: {
+            yellow:     ['Taegeuk 1', 'Taegeuk 2'],
+            green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
+            blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
+            red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
+            // Same pool as Senior 1
+            worldclass: ['Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8',
+                         'Koryo', 'Keumgang', 'Taebaek', 'Pyongwon', 'Sipjin']
+        },
+
+        // ---- MASTER / ULTRA  (41+ yrs) ----
+        master: {
+            yellow:     ['Taegeuk 1', 'Taegeuk 2'],
+            green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
+            blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
+            red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
+            // 5th Dan+: Taegeuk 8 through Hansu (full black belt set)
+            worldclass: ['Taegeuk 8', 'Koryo', 'Keumgang', 'Taebaek',
+                         'Pyongwon', 'Sipjin', 'Jitae', 'Cheonkwon', 'Hansu']
+        }
+    };
+
+    // ==============================================================
+    //  AGE GROUP DEFINITIONS  (id must match POOLS keys above)
+    // ==============================================================
+    const AGE_GROUPS = [
+        { id: 'under12', label: 'Under 12',       sub: 'Elementary  (10-11 yrs)' },
+        { id: 'cadet',   label: 'Cadet / Junior', sub: '13-17 yrs' },
+        { id: 'senior1', label: 'Senior 1',       sub: '18-30 yrs' },
+        { id: 'senior2', label: 'Senior 2',       sub: '31-40 yrs' },
+        { id: 'master',  label: 'Master / Ultra', sub: '41+ yrs' }
+    ];
+
+    // ==============================================================
+    //  BELT LEVEL DEFINITIONS
+    //  color: CSS color for the belt dot indicator
+    // ==============================================================
+    const BELT_LEVELS = [
+        { id: 'yellow',     label: 'Yellow Belt',         sub: 'Taegeuk 1-2',      color: '#f1c40f' },
+        { id: 'green',      label: 'Green Belt',          sub: 'Taegeuk 1-4',      color: '#27ae60' },
+        { id: 'blue',       label: 'Blue Belt',           sub: 'Taegeuk 3-6',      color: '#2980b9' },
+        { id: 'red',        label: 'Red Belt',            sub: 'Taegeuk 4-8',      color: '#c0392b' },
+        { id: 'worldclass', label: 'World Class',         sub: 'Black Belt / Dan', color: '#111111' }
+    ];
+
+    // ==============================================================
+    //  APP STATE  — tracks current selections and draw results
+    // ==============================================================
+    const state = {
+        age:      null,   // selected age group id  e.g. 'cadet'
+        belt:     null,   // selected belt level id  e.g. 'worldclass'
+        r1:       null,   // poomsae drawn for Round 1
+        r2:       null,   // poomsae drawn for Round 2
+        busy:     false   // true while slot animation is running
+    };
+
+    // ==============================================================
+    //  SCREEN NAVIGATION
+    // ==============================================================
+
+    // Show one screen, hide all others
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        // Show the back/fullscreen corner buttons only on the draw screen
+        document.getElementById('btn-back').style.display = (id === 'screen-draw') ? '' : 'none';
+    }
+
+    function goToWelcome() { showScreen('screen-welcome'); }
+
+    function goToAge() {
+        buildAgeCards();
+        showScreen('screen-age');
+    }
+
+    function goToBelt() {
+        buildBeltCards();
+        showScreen('screen-belt');
+    }
+
+    // "← Change Division" button on draw screen brings back to age select
+    function goBack() { goToAge(); }
+
+    // ==============================================================
+    //  CARD BUILDERS — dynamically generate selection card HTML
+    // ==============================================================
+
+    function buildAgeCards() {
+        const container = document.getElementById('age-cards');
+        container.innerHTML = '';
+
+        AGE_GROUPS.forEach(group => {
+            const card = document.createElement('div');
+            card.className = 'sel-card' + (state.age === group.id ? ' selected' : '');
+            card.innerHTML = `<div class="card-label">${group.label}</div>
+                              <div class="card-sub">${group.sub}</div>`;
+            card.addEventListener('click', () => {
+                state.age  = group.id;
+                state.belt = null; // reset belt whenever age changes
+                goToBelt();
+            });
+            container.appendChild(card);
+        });
+    }
+
+    function buildBeltCards() {
+        const container = document.getElementById('belt-cards');
+        container.innerHTML = '';
+
+        BELT_LEVELS.forEach(belt => {
+            const card = document.createElement('div');
+            card.className = 'sel-card' + (state.belt === belt.id ? ' selected' : '');
+            card.innerHTML = `<div class="belt-dot" style="background:${belt.color}"></div>
+                              <div class="card-label">${belt.label}</div>
+                              <div class="card-sub">${belt.sub}</div>`;
+            card.addEventListener('click', () => {
+                state.belt = belt.id;
+                state.r1   = null;
+                state.r2   = null;
+                initDrawScreen();
+                showScreen('screen-draw');
+            });
+            container.appendChild(card);
+        });
+    }
+
+    // ==============================================================
+    //  DRAW SCREEN INIT  — reset boxes and update labels
+    // ==============================================================
+    function initDrawScreen() {
+        const ageInfo  = AGE_GROUPS.find(a => a.id === state.age);
+        const beltInfo = BELT_LEVELS.find(b => b.id === state.belt);
+        const pool     = POOLS[state.age][state.belt];
+
+        // Update the division badge at the top
+        document.getElementById('division-badge').textContent =
+            `${ageInfo.label}  •  ${beltInfo.label}`;
+
+        // Show the poomsae pool as a hint below each box
+        const poolText = 'Pool: ' + pool.join(', ');
+        document.getElementById('hint-r1').textContent = poolText;
+        document.getElementById('hint-r2').textContent = poolText;
+
+        // Reset both result boxes to the "Press Draw" state
+        clearBox('box-r1');
+        clearBox('box-r2');
+
+        // Round 1 starts enabled; Round 2 locked until Round 1 is drawn
+        setBtn('btn-r1', true);
+        setBtn('btn-r2', false);
+    }
+
+    // Clear a result box back to placeholder appearance
+    function clearBox(id) {
+        const box = document.getElementById(id);
+        box.classList.remove('spinning', 'revealed');
+        box.innerHTML = '<span class="placeholder-text">Press Draw</span>';
+    }
+
+    // Enable or disable a button
+    function setBtn(id, enabled) {
+        const btn = document.getElementById(id);
+        btn.disabled = !enabled;
+    }
+
+    // ==============================================================
+    //  RESET DRAWS  — clears results but keeps the same division
+    // ==============================================================
+    function resetDraws() {
+        state.r1 = null;
+        state.r2 = null;
+        initDrawScreen();
+    }
+
+    // ==============================================================
+    //  DRAW LOGIC  — slot-machine reveal animation
+    //
+    //  How it works:
+    //    1. Pick a random poomsae from the pool for this round.
+    //    2. Rapidly flash random names from the pool (slot effect).
+    //    3. Gradually slow down the flashing.
+    //    4. Land on the chosen name with a pop animation.
+    //
+    //  Round 2 is guaranteed to differ from Round 1 (if pool allows).
+    // ==============================================================
+    function drawRound(round) {
+        if (state.busy) return;  // ignore clicks during animation
+        state.busy = true;
+
+        const pool   = POOLS[state.age][state.belt];
+        const boxId  = round === 1 ? 'box-r1' : 'box-r2';
+        const box    = document.getElementById(boxId);
+
+        // Pick the final poomsae; ensure Round 2 ≠ Round 1 when possible
+        let chosen;
+        do {
+            chosen = pool[Math.floor(Math.random() * pool.length)];
+        } while (round === 2 && pool.length > 1 && chosen === state.r1);
+
+        // Lock both buttons during animation
+        setBtn('btn-r1', false);
+        setBtn('btn-r2', false);
+
+        // Start spinning appearance
+        box.classList.remove('revealed');
+        box.classList.add('spinning');
+        box.textContent = pool[0]; // show something immediately
+
+        let count = 0;
+        const TOTAL = 28; // total frames before landing
+
+        // Recursive setTimeout lets us change delay each frame
+        function frame() {
+            // Flash a random name from the pool
+            box.textContent = pool[Math.floor(Math.random() * pool.length)];
+            count++;
+
+            // Calculate next delay: fast → medium → slow
+            let delay;
+            if      (count < TOTAL * 0.45) delay = 75;   // fast phase
+            else if (count < TOTAL * 0.70) delay = 130;  // medium phase
+            else if (count < TOTAL * 0.88) delay = 220;  // slow phase
+            else                           delay = 370;  // dramatic last frames
+
+            if (count >= TOTAL) {
+                // ---- FINAL REVEAL ----
+                box.textContent = chosen;
+                box.classList.remove('spinning');
+                box.classList.add('revealed');
+
+                // Save result to state
+                if (round === 1) {
+                    state.r1 = chosen;
+                    setBtn('btn-r2', true);  // unlock Round 2
+                    // Round 1 stays locked — no re-draws after reveal
+                } else {
+                    state.r2 = chosen;
+                    // Both rounds done — both stay locked until reset
+                }
+
+                state.busy = false;
+                return;
+            }
+
+            setTimeout(frame, delay);
+        }
+
+        setTimeout(frame, 75);
+    }
+
+    // ==============================================================
+    //  KEYBOARD SHORTCUTS  (draw screen only)
+    //    Space / Enter → next available draw
+    //    R             → reset draws
+    // ==============================================================
+    document.addEventListener('keydown', e => {
+        const onDraw = document.getElementById('screen-draw').classList.contains('active');
+        if (!onDraw) return;
+
+        if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();  // prevent page scroll on Space
+            if (!state.r1) drawRound(1);
+            else if (!state.r2) drawRound(2);
+        }
+        if (e.key === 'r' || e.key === 'R') {
+            resetDraws();
+        }
+    });
+
+    // ==============================================================
+    //  FULLSCREEN TOGGLE  — for TV / projector display
+    // ==============================================================
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+</script>
+</body>
+</html>
