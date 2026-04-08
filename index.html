@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Taekwondo Poomsae Draw</title>
     <style>
-        /* =====================================================
-           CSS VARIABLES — change colors here to re-theme
-        ===================================================== */
+        /* ====================================================
+           CSS VARIABLES
+        ==================================================== */
         :root {
             --blue-dark:  #0d1f3c;
             --blue:       #1a3a6b;
@@ -15,12 +15,11 @@
             --red:        #c0392b;
             --red-light:  #e74c3c;
             --gold:       #f39c12;
+            --gold-dim:   rgba(243,156,18,0.15);
             --white:      #ffffff;
+            --line:       rgba(255,255,255,0.22);
         }
 
-        /* =====================================================
-           RESET & BASE
-        ===================================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -28,30 +27,28 @@
             background: linear-gradient(160deg, var(--blue-dark) 0%, var(--blue) 60%, var(--blue-dark) 100%);
             min-height: 100vh;
             color: var(--white);
-            overflow: hidden;  /* no scrollbars — fullscreen feel */
         }
 
-        /* =====================================================
+        /* ====================================================
            SCREEN SYSTEM
-           Each <div class="screen"> is a full-page "slide".
-           Only the one with class "active" is visible.
-        ===================================================== */
+        ==================================================== */
         .screen {
             display: none;
             width: 100vw;
-            height: 100vh;
+            min-height: 100vh;
             position: absolute;
             top: 0; left: 0;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px 60px;
+            padding: 70px 40px 40px;
+            overflow-y: auto;
         }
         .screen.active { display: flex; }
 
-        /* =====================================================
-           TYPOGRAPHY HELPERS
-        ===================================================== */
+        /* ====================================================
+           TYPOGRAPHY
+        ==================================================== */
         .page-title {
             font-size: clamp(1.6rem, 3vw, 2.4rem);
             font-weight: 800;
@@ -62,30 +59,30 @@
         }
         .page-sub {
             font-size: clamp(0.85rem, 1.5vw, 1rem);
-            color: rgba(255,255,255,0.55);
+            color: rgba(255,255,255,0.5);
             letter-spacing: 2px;
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 36px;
         }
 
-        /* =====================================================
+        /* ====================================================
            WELCOME SCREEN
-        ===================================================== */
+        ==================================================== */
         .welcome-logo {
-            font-size: clamp(3rem, 6vw, 5rem);
+            font-size: clamp(4rem, 9vw, 7.5rem);
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 6px;
+            letter-spacing: 8px;
             text-align: center;
-            line-height: 1.1;
+            line-height: 1.05;
         }
         .welcome-subtitle {
-            font-size: clamp(1rem, 2.5vw, 1.6rem);
+            font-size: clamp(1.3rem, 3vw, 2.2rem);
             color: var(--gold);
-            letter-spacing: 3px;
-            margin: 14px 0 50px;
+            letter-spacing: 5px;
+            font-weight: 700;
+            margin: 18px 0 55px;
         }
-        /* Red divider stripe */
         .divider {
             width: 180px;
             height: 5px;
@@ -94,10 +91,9 @@
             margin: 0 auto 50px;
         }
 
-        /* =====================================================
+        /* ====================================================
            BUTTONS
-        ===================================================== */
-        /* Main CTA button (red) */
+        ==================================================== */
         .btn-primary {
             background: var(--red);
             color: white;
@@ -117,19 +113,15 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 28px rgba(192,57,43,0.65);
         }
-        .btn-primary:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-        }
+        .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
 
-        /* Ghost / secondary button */
         .btn-ghost {
             background: transparent;
-            color: rgba(255,255,255,0.7);
-            border: 1.5px solid rgba(255,255,255,0.35);
-            padding: 11px 28px;
-            font-size: 0.9rem;
-            border-radius: 6px;
+            color: rgba(255,255,255,0.45);
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 6px 16px;
+            font-size: 0.68rem;
+            border-radius: 5px;
             cursor: pointer;
             letter-spacing: 1px;
             transition: all 0.2s;
@@ -141,11 +133,67 @@
             background: rgba(255,255,255,0.08);
         }
 
-        /* Fixed corner buttons (back / fullscreen) */
+        .btn-advance {
+            background: var(--gold);
+            color: #0d1f3c;
+            border: none;
+            padding: 15px 44px;
+            font-size: 1rem;
+            font-weight: 800;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 18px rgba(243,156,18,0.4);
+        }
+        .btn-advance:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(243,156,18,0.6);
+        }
+
+        .btn-r3 {
+            background: rgba(42,82,152,0.5);
+            color: rgba(255,255,255,0.8);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 7px 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.2s;
+        }
+        .btn-r3:hover:not(:disabled) {
+            background: rgba(42,82,152,0.85);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        .btn-r3:disabled { opacity: 0.25; cursor: not-allowed; }
+
+        .btn-download {
+            background: rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 10px 26px;
+            font-size: 0.82rem;
+            border-radius: 6px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            margin-top: 18px;
+        }
+        .btn-download:hover {
+            background: rgba(255,255,255,0.13);
+            color: white;
+            border-color: rgba(255,255,255,0.35);
+        }
+
         .corner-btn {
             position: fixed;
             background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.25);
+            border: 1px solid rgba(255,255,255,0.22);
             color: white;
             padding: 9px 20px;
             border-radius: 6px;
@@ -158,9 +206,9 @@
         #btn-back       { top: 22px; left: 22px; }
         #btn-fullscreen { top: 22px; right: 22px; }
 
-        /* =====================================================
-           SELECTION CARDS  (age groups & belt levels)
-        ===================================================== */
+        /* ====================================================
+           SELECTION CARDS  (age / belt)
+        ==================================================== */
         .cards-grid {
             display: flex;
             flex-wrap: wrap;
@@ -168,7 +216,6 @@
             justify-content: center;
             max-width: 960px;
         }
-
         .sel-card {
             background: rgba(255,255,255,0.07);
             border: 2px solid rgba(255,255,255,0.18);
@@ -192,31 +239,104 @@
         }
         .card-label { font-size: 1.2rem; font-weight: 700; }
         .card-sub   { font-size: 0.78rem; opacity: 0.7; margin-top: 4px; }
-
-        /* Colored dot showing belt color */
         .belt-dot {
-            width: 28px;
-            height: 28px;
+            width: 28px; height: 28px;
             border-radius: 50%;
             margin: 0 auto 10px;
             border: 2.5px solid rgba(255,255,255,0.4);
         }
 
-        /* =====================================================
+        /* ====================================================
+           MODE SELECTION
+        ==================================================== */
+        .mode-cards {
+            display: flex;
+            gap: 28px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .mode-card {
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.18);
+            border-radius: 16px;
+            padding: 38px 44px;
+            cursor: pointer;
+            text-align: center;
+            min-width: 220px;
+            max-width: 280px;
+            transition: all 0.2s;
+        }
+        .mode-card:hover {
+            background: rgba(255,255,255,0.13);
+            border-color: var(--red-light);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+        }
+        .mode-icon  { font-size: 2.6rem; margin-bottom: 14px; }
+        .mode-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 10px; }
+        .mode-desc  { font-size: 0.8rem; opacity: 0.6; line-height: 1.6; }
+
+        /* ====================================================
+           BRACKET SETUP
+        ==================================================== */
+        .bracket-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            max-width: 720px;
+        }
+        .bracket-opt {
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.18);
+            border-radius: 10px;
+            padding: 18px 30px;
+            cursor: pointer;
+            text-align: center;
+            min-width: 155px;
+            transition: all 0.2s;
+        }
+        .bracket-opt:hover {
+            background: var(--gold-dim);
+            border-color: var(--gold);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(243,156,18,0.25);
+        }
+        .bracket-opt .opt-label { font-size: 1.05rem; font-weight: 700; }
+        .bracket-opt .opt-sub   { font-size: 0.75rem; opacity: 0.6; margin-top: 4px; }
+
+        /* ====================================================
            DRAW SCREEN
-        ===================================================== */
-        /* Info badge showing selected division */
+        ==================================================== */
         .division-badge {
-            background: rgba(255,255,255,0.09);
-            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.22);
             padding: 10px 28px;
             border-radius: 50px;
             font-size: clamp(0.85rem, 1.5vw, 1rem);
-            margin-bottom: 44px;
             letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .bracket-stage-label {
+            font-size: clamp(1.2rem, 2.5vw, 1.9rem);
+            font-weight: 800;
+            color: var(--gold);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 2px;
+            display: none;
+        }
+        .match-counter {
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.45);
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 22px;
+            display: none;
         }
 
-        /* Two round columns side by side */
         .rounds-row {
             display: flex;
             gap: 50px;
@@ -228,37 +348,29 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
         }
         .round-label {
             font-size: 1rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 3px;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255,255,255,0.55);
         }
-
-        /* The result box that shows the poomsae name */
         .result-box {
-            width: clamp(260px, 30vw, 400px);
-            height: clamp(100px, 14vh, 150px);
+            width: clamp(320px, 38vw, 540px);
+            height: clamp(160px, 26vh, 260px);
             background: rgba(0,0,0,0.35);
             border: 3px solid rgba(255,255,255,0.18);
-            border-radius: 14px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(1.4rem, 3vw, 2.4rem);
-            font-weight: 800;
+            font-size: clamp(3rem, 7vw, 6.5rem);
+            font-weight: 900;
             overflow: hidden;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
-        /* Gold glow while spinning */
-        .result-box.spinning {
-            border-color: var(--gold);
-            box-shadow: 0 0 30px rgba(243,156,18,0.45);
-        }
-        /* Red glow after reveal */
         .result-box.revealed {
             border-color: var(--red-light);
             box-shadow: 0 0 45px rgba(231,76,60,0.55);
@@ -269,32 +381,406 @@
             60%  { transform: scale(1.06); }
             100% { transform: scale(1); }
         }
-
         .placeholder-text {
-            color: rgba(255,255,255,0.22);
-            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: rgba(255,255,255,0.2);
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
             font-weight: 400;
         }
-
-        /* Small pool hint text below each box */
         .pool-hint {
-            font-size: clamp(0.65rem, 1vw, 0.78rem);
-            color: rgba(255,255,255,0.35);
+            font-size: clamp(0.6rem, 0.9vw, 0.74rem);
+            color: rgba(255,255,255,0.28);
             text-align: center;
-            max-width: clamp(260px, 30vw, 400px);
+            max-width: clamp(250px, 28vw, 380px);
             line-height: 1.5;
         }
+        .excl-hint {
+            font-size: 0.7rem;
+            color: rgba(231,76,60,0.65);
+            text-align: center;
+            max-width: clamp(250px, 28vw, 380px);
+            min-height: 1em;
+            line-height: 1.4;
+        }
+        .draw-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            margin-top: 16px;
+        }
+        .complete-banner {
+            display: none;
+            background: linear-gradient(135deg, rgba(243,156,18,0.18), rgba(192,57,43,0.18));
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 20px 40px;
+            text-align: center;
+        }
+        .complete-banner.visible { display: block; }
+        .complete-banner h3 {
+            font-size: 1.15rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .complete-banner p { margin-top: 8px; font-size: 0.82rem; opacity: 0.65; }
 
-        /* Keyboard hint shown at bottom of draw screen */
+        /* ====================================================
+           VISUAL BRACKET
+        ==================================================== */
+        .bracket-visual-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 36px;
+            display: none;
+        }
+        .bracket-visual-title {
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.28);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        .bracket-visual {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            overflow-x: auto;
+            padding: 8px 24px 24px;
+            min-width: min-content;
+        }
+
+        /* One column per bracket round */
+        .bv-col {
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow: visible;
+            margin-right: 44px; /* gap for connector lines */
+        }
+        .bv-col-final { margin-right: 0; } /* only the Final column itself needs no right margin */
+
+        .bv-col-header {
+            width: 148px;
+            height: 36px;           /* fixed — keeps all columns' entries aligned */
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.32);
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+
+        /* Each entry holds one match box and fills equal height within column */
+        .bv-entry {
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: visible;
+            flex-shrink: 0;
+        }
+
+        /* Right-side bracket line: top match of a pair curves down-right */
+        .bv-entry.pair-top::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            height: 50%;
+            width: 22px;
+            border-top: 2px solid var(--line);
+            border-right: 2px solid var(--line);
+            pointer-events: none;
+        }
+        /* Right-side bracket line: bottom match of a pair curves up-right */
+        .bv-entry.pair-bottom::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 0;
+            height: 50%;
+            width: 22px;
+            border-bottom: 2px solid var(--line);
+            border-right: 2px solid var(--line);
+            pointer-events: none;
+        }
+        /* Left-side horizontal feed line from previous round */
+        .bv-entry.has-connector::before {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            width: 22px;
+            height: 0;
+            border-top: 2px solid var(--line);
+            transform: translateY(-1px);
+            pointer-events: none;
+        }
+
+        /* Match box */
+        .bv-match-box {
+            width: 148px;
+            min-height: 66px;
+            border-radius: 10px;
+            padding: 8px 10px;
+            border: 2px solid transparent;
+            transition: all 0.25s;
+            cursor: default;
+            flex-shrink: 0;
+        }
+        .bv-match-box.current {
+            background: rgba(243,156,18,0.14);
+            border-color: var(--gold);
+            box-shadow: 0 0 18px rgba(243,156,18,0.28);
+        }
+        .bv-match-box.done {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.14);
+        }
+        .bv-match-box.pending {
+            background: rgba(255,255,255,0.02);
+            border-color: rgba(255,255,255,0.06);
+        }
+        .bv-match-box.skipped {
+            background: rgba(255,255,255,0.02);
+            border-color: rgba(255,255,255,0.06);
+            border-style: dashed;
+        }
+
+        .bv-match-num {
+            font-size: 0.58rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 4px;
+        }
+        .bv-match-box.current .bv-match-num { color: var(--gold); }
+
+        .bv-poomsae {
+            font-size: 0.82rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.6;
+        }
+        .bv-r1 { color: rgba(255,255,255,0.92); }
+        .bv-r2 { color: rgba(255,255,255,0.58); }
+        .bv-r3 { color: rgba(243,156,18,0.85); font-size: 0.76rem; font-weight: 700; }
+        .bv-match-box.pending .bv-poomsae { color: rgba(255,255,255,0.18); }
+
+        /* ====================================================
+           SYMMETRIC BRACKET — left ↔ right mirror layout
+        ==================================================== */
+
+        /* Wrapper for each half (left or right) of the bracket */
+        .bracket-half {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            flex-shrink: 0;
+            overflow: visible;
+        }
+
+        /* Final (center) column — gold header */
+        .bv-col-final {
+            margin: 0;               /* gaps handled by adjacent columns */
+            flex-shrink: 0;
+            overflow: visible;
+        }
+        .bv-col-final .bv-col-header {
+            color: var(--gold);
+            border-color: rgba(243,156,18,0.3);
+        }
+
+        /* ---- Right-side columns: all connector directions are mirrored ---- */
+        /* pair-top on RTL: bracket corner opens to the left */
+        .bv-col-rtl .bv-entry.pair-top::after {
+            left: auto;
+            right: 100%;
+            width: 22px;
+            border-top:   2px solid var(--line);
+            border-right: none;
+            border-left:  2px solid var(--line);
+        }
+        .bv-col-rtl .bv-entry.pair-bottom::after {
+            left: auto;
+            right: 100%;
+            width: 22px;
+            border-bottom: 2px solid var(--line);
+            border-right:  none;
+            border-left:   2px solid var(--line);
+        }
+        .bv-col-rtl .bv-entry.has-connector::before {
+            right: auto;
+            left: 100%;
+            width: 22px;
+        }
+        /* RTL columns: gap sits on the left instead of the right */
+        .bv-col-rtl {
+            margin-right: 0;
+            margin-left: 44px;
+        }
+
+        /* ---- Connects-to-final lines (SF entries → Final box) ---- */
+        .bv-entry.connects-to-final::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            width: 22px;
+            height: 0;
+            border-top: 2px solid var(--line);
+            transform: translateY(-1px);
+            pointer-events: none;
+        }
+        .bv-entry.connects-to-final-rtl::after {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            width: 22px;
+            height: 0;
+            border-top: 2px solid var(--line);
+            transform: translateY(-1px);
+            pointer-events: none;
+        }
+
+        /* ---- Final entry: horizontal lines on both sides ---- */
+        .bv-entry.final-entry::before {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            width: 22px;
+            border-top: 2px solid var(--line);
+            transform: translateY(-1px);
+            pointer-events: none;
+        }
+        .bv-entry.final-entry::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            width: 22px;
+            border-top: 2px solid var(--line);
+            transform: translateY(-1px);
+            pointer-events: none;
+        }
+
+        /* Champion badge below Final box */
+        .champion-badge {
+            text-align: center;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold);
+            opacity: 0.65;
+            margin-top: 8px;
+        }
+
+        /* ====================================================
+           BRACKET SCREEN
+        ==================================================== */
+        #screen-bracket {
+            justify-content: flex-start;
+            padding-top: 28px;
+            overflow-y: auto;
+        }
+
+        .bracket-screen-header {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 24px;
+            flex-shrink: 0;
+        }
+        .bracket-screen-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .bracket-screen-division {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.45);
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+        }
+
+        /* "View Bracket" button on the draw screen */
+        .btn-bracket-nav {
+            background: rgba(243,156,18,0.12);
+            color: var(--gold);
+            border: 1.5px solid rgba(243,156,18,0.4);
+            padding: 10px 28px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            margin-top: 14px;
+        }
+        .btn-bracket-nav:hover {
+            background: rgba(243,156,18,0.22);
+            border-color: var(--gold);
+        }
+
+        /* ====================================================
+           ROUND 3 SCREEN
+        ==================================================== */
+        .r3-context {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .r3-heading {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 800;
+            color: var(--gold);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .r3-draw-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* ====================================================
+           KEYBOARD HINT
+        ==================================================== */
         .key-hint {
-            margin-top: 30px;
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.3);
+            margin-top: 18px;
+            font-size: 0.73rem;
+            color: rgba(255,255,255,0.28);
             letter-spacing: 1px;
+            text-align: center;
         }
         kbd {
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.22);
             border-radius: 4px;
             padding: 2px 7px;
             font-family: inherit;
@@ -303,240 +789,309 @@
 </head>
 <body>
 
-<!-- ================================================================
-     FIXED CORNER BUTTONS  (always on top, shown only on draw screen)
-================================================================ -->
-<button class="corner-btn" id="btn-back"       onclick="goBack()"            style="display:none">← Change Division</button>
+<!-- ============================================================
+     FIXED CORNER BUTTONS
+============================================================ -->
+<button class="corner-btn" id="btn-back"       onclick="goBack()"         style="display:none">← Change Division</button>
 <button class="corner-btn" id="btn-fullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
 
 
-<!-- ================================================================
+<!-- ============================================================
      SCREEN 1 — WELCOME
-================================================================ -->
+============================================================ -->
 <div class="screen active" id="screen-welcome">
     <div class="welcome-logo">Taekwondo<br>Poomsae</div>
     <div class="welcome-subtitle">Draw System</div>
     <div class="divider"></div>
     <button class="btn-primary" onclick="goToAge()">Begin Draw</button>
+    <button class="btn-download" onclick="downloadApp()">&#8659; Download App</button>
 </div>
 
 
-<!-- ================================================================
+<!-- ============================================================
      SCREEN 2 — SELECT AGE GROUP
-================================================================ -->
+============================================================ -->
 <div class="screen" id="screen-age">
     <div class="page-title">Select Age Division</div>
     <div class="page-sub">Choose the competitor's age group</div>
-    <div class="cards-grid" id="age-cards">
-        <!-- Populated by buildAgeCards() in JS -->
-    </div>
+    <div class="cards-grid" id="age-cards"></div>
     <button class="btn-ghost" onclick="goToWelcome()">← Back</button>
 </div>
 
 
-<!-- ================================================================
+<!-- ============================================================
      SCREEN 3 — SELECT BELT LEVEL
-================================================================ -->
+============================================================ -->
 <div class="screen" id="screen-belt">
     <div class="page-title">Select Belt Level</div>
     <div class="page-sub">Choose the competitor's rank</div>
-    <div class="cards-grid" id="belt-cards">
-        <!-- Populated by buildBeltCards() in JS -->
-    </div>
+    <div class="cards-grid" id="belt-cards"></div>
     <button class="btn-ghost" onclick="goToAge()">← Back</button>
 </div>
 
 
-<!-- ================================================================
-     SCREEN 4 — DRAW
-================================================================ -->
+<!-- ============================================================
+     SCREEN 4 — SELECT DRAW MODE
+============================================================ -->
+<div class="screen" id="screen-mode">
+    <div class="page-title">Draw Mode</div>
+    <div class="page-sub">Select how you want to run the draw</div>
+    <div class="mode-cards">
+
+        <div class="mode-card" onclick="selectMode('single')">
+            <div class="mode-icon">&#127919;</div>
+            <div class="mode-title">Single Match</div>
+            <div class="mode-desc">Draw Round 1 and Round 2 for one match. Optionally draw a Round 3 tiebreaker.</div>
+        </div>
+
+        <div class="mode-card" onclick="selectMode('bracket')">
+            <div class="mode-icon">&#127942;</div>
+            <div class="mode-title">Tournament Bracket</div>
+            <div class="mode-desc">Track every match across all rounds. Each athlete's draws are tracked so they never repeat.</div>
+        </div>
+
+    </div>
+    <button class="btn-ghost" onclick="goToBelt()">← Back</button>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 5 — BRACKET SETUP  (tournament mode only)
+============================================================ -->
+<div class="screen" id="screen-bracket-setup">
+    <div class="page-title">Starting Round</div>
+    <div class="page-sub">Where does the bracket begin?</div>
+    <div class="bracket-options" id="bracket-options"></div>
+    <button class="btn-ghost" onclick="showScreen('screen-mode')">← Back</button>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 6 — DRAW
+============================================================ -->
 <div class="screen" id="screen-draw">
 
-    <div class="page-title">Poomsae Draw</div>
-
-    <!-- Shows e.g. "Cadet / Junior  •  World Class (Black Belt)" -->
     <div class="division-badge" id="division-badge">—</div>
+    <div class="bracket-stage-label" id="bracket-stage-label"></div>
+    <div class="match-counter" id="match-counter"></div>
 
-    <!-- Round 1 and Round 2 side by side -->
     <div class="rounds-row">
 
-        <!-- ROUND 1 -->
         <div class="round-col">
             <div class="round-label">Round 1</div>
             <div class="result-box" id="box-r1">
                 <span class="placeholder-text">Press Draw</span>
             </div>
             <div class="pool-hint" id="hint-r1"></div>
-            <button class="btn-primary" id="btn-r1" onclick="drawRound(1)">Draw Round 1</button>
+            <div class="excl-hint" id="excl-r1"></div>
+            <button class="btn-primary" id="btn-r1" onclick="drawPerf(1)">Draw Round 1</button>
         </div>
 
-        <!-- ROUND 2 -->
         <div class="round-col">
             <div class="round-label">Round 2</div>
             <div class="result-box" id="box-r2">
                 <span class="placeholder-text">Press Draw</span>
             </div>
             <div class="pool-hint" id="hint-r2"></div>
-            <!-- Disabled until Round 1 is drawn -->
-            <button class="btn-primary" id="btn-r2" onclick="drawRound(2)" disabled>Draw Round 2</button>
+            <div class="excl-hint" id="excl-r2"></div>
+            <button class="btn-primary" id="btn-r2" onclick="drawPerf(2)" disabled>Draw Round 2</button>
         </div>
 
     </div>
 
-    <!-- Reset keeps same division but clears both draws -->
-    <button class="btn-ghost" onclick="resetDraws()" style="margin-top:30px">↺ Reset Draws</button>
-
-    <!-- Keyboard shortcut hint -->
-    <div class="key-hint">
-        <kbd>Space</kbd> or <kbd>Enter</kbd> — next draw &nbsp;|&nbsp;
-        <kbd>R</kbd> — reset
+    <div class="draw-actions">
+        <button class="btn-advance" id="btn-advance" onclick="advanceMatch()" style="display:none">
+            Next &#8594;
+        </button>
+        <div class="complete-banner" id="complete-banner">
+            <h3>Tournament Draw Complete</h3>
+            <p>All bracket rounds have been drawn.</p>
+        </div>
+        <button class="btn-r3" id="btn-r3" onclick="goToR3()" disabled>
+            + Draw Round 3 (Tiebreak)
+        </button>
+        <button class="btn-ghost" id="btn-skip" onclick="skipMatch()" style="margin-top:0">
+            &#8594;&#8194;Skip This Match
+        </button>
+        <button class="btn-ghost" onclick="resetCurrentDraw()" style="margin-top:0">
+            &#8635; Reset Current Draw
+        </button>
     </div>
+
+    <!-- Bracket nav button — bracket mode only, shown from draw screen -->
+    <button class="btn-bracket-nav" id="btn-view-bracket"
+            onclick="showBracketScreen()" style="display:none">
+        &#9776;&#8194;View Bracket
+    </button>
+
+    <div class="key-hint">
+        <kbd>Space</kbd> / <kbd>Enter</kbd> — next draw &nbsp;|&nbsp;
+        <kbd>R</kbd> — reset &nbsp;|&nbsp;
+        <kbd>N</kbd> — next match/round &nbsp;|&nbsp;
+        <kbd>3</kbd> — round 3
+    </div>
+
 </div>
 
 
-<!-- ================================================================
+<!-- ============================================================
+     SCREEN 7 — ROUND 3 DRAW
+============================================================ -->
+<div class="screen" id="screen-r3">
+
+    <div class="r3-context" id="r3-context">—</div>
+    <div class="r3-heading">Round 3 — Tiebreak Draw</div>
+
+    <div class="r3-draw-col">
+        <div class="result-box" id="box-r3">
+            <span class="placeholder-text">Press Draw</span>
+        </div>
+        <div class="pool-hint" id="hint-r3"></div>
+        <div class="excl-hint" id="excl-r3"></div>
+        <button class="btn-primary" id="btn-draw-r3" onclick="drawR3()">Draw Round 3</button>
+    </div>
+
+    <div class="draw-actions" style="margin-top:30px">
+        <button class="btn-ghost" onclick="backFromR3()" style="margin-top:0">← Back to Match</button>
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     SCREEN 8 — BRACKET VIEW
+============================================================ -->
+<div class="screen" id="screen-bracket">
+
+    <div class="bracket-screen-header">
+        <div>
+            <div class="bracket-screen-title">Tournament Bracket</div>
+            <div class="bracket-screen-division" id="bracket-screen-division"></div>
+        </div>
+        <button class="btn-ghost" onclick="backToDraw()" style="margin-top:0">
+            &#8592; Back to Draw
+        </button>
+    </div>
+
+    <div class="bracket-visual" id="bracket-visual"></div>
+
+</div>
+
+
+<!-- ============================================================
      JAVASCRIPT
-================================================================ -->
+============================================================ -->
 <script>
 
-    // ==============================================================
+    // ============================================================
     //  POOMSAE POOL DATA
-    //  Organized as: POOLS[ageGroupId][beltLevelId] = [array of poomsae]
-    //
-    //  Belt level IDs:
-    //    yellow     → Taegeuk 1-2
-    //    green      → Taegeuk 1-4
-    //    blue       → Taegeuk 3-6
-    //    red        → Taegeuk 4-8
-    //    worldclass → Black Belt / Dan (varies by age group)
-    // ==============================================================
+    // ============================================================
     const POOLS = {
-
-        // ---- UNDER 12  (Elementary, 10-11 yrs) ----
         under12: {
             yellow:     ['Taegeuk 1', 'Taegeuk 2'],
             green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
             blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
             red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
-            // 1st Dan / Poom: Taegeuk 2-8 + Koryo
             worldclass: ['Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5',
                          'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8', 'Koryo']
         },
-
-        // ---- CADET / JUNIOR  (13-17 yrs) ----
         cadet: {
             yellow:     ['Taegeuk 1', 'Taegeuk 2'],
             green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
             blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
             red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
-            // 1st-3rd Dan: Taegeuk 4-8, Koryo, Keumgang, Taebaek
             worldclass: ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7',
                          'Taegeuk 8', 'Koryo', 'Keumgang', 'Taebaek']
         },
-
-        // ---- SENIOR 1  (18-30 yrs) ----
         senior1: {
             yellow:     ['Taegeuk 1', 'Taegeuk 2'],
             green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
             blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
             red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
-            // 1st-4th Dan: Taegeuk 6-8, Koryo, Keumgang, Taebaek, Pyongwon, Sipjin
             worldclass: ['Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8',
                          'Koryo', 'Keumgang', 'Taebaek', 'Pyongwon', 'Sipjin']
         },
-
-        // ---- SENIOR 2  (31-40 yrs) ----
         senior2: {
             yellow:     ['Taegeuk 1', 'Taegeuk 2'],
             green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
             blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
             red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
-            // Same pool as Senior 1
             worldclass: ['Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8',
                          'Koryo', 'Keumgang', 'Taebaek', 'Pyongwon', 'Sipjin']
         },
-
-        // ---- MASTER / ULTRA  (41+ yrs) ----
         master: {
             yellow:     ['Taegeuk 1', 'Taegeuk 2'],
             green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
             blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
             red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
-            // 5th Dan+: Taegeuk 8 through Hansu (full black belt set)
             worldclass: ['Taegeuk 8', 'Koryo', 'Keumgang', 'Taebaek',
                          'Pyongwon', 'Sipjin', 'Jitae', 'Cheonkwon', 'Hansu']
         }
     };
 
-    // ==============================================================
-    //  AGE GROUP DEFINITIONS  (id must match POOLS keys above)
-    // ==============================================================
     const AGE_GROUPS = [
-        { id: 'under12', label: 'Under 12',       sub: 'Elementary  (10-11 yrs)' },
+        { id: 'under12', label: 'Under 12',       sub: 'Elementary (10-11 yrs)' },
         { id: 'cadet',   label: 'Cadet / Junior', sub: '13-17 yrs' },
         { id: 'senior1', label: 'Senior 1',       sub: '18-30 yrs' },
         { id: 'senior2', label: 'Senior 2',       sub: '31-40 yrs' },
         { id: 'master',  label: 'Master / Ultra', sub: '41+ yrs' }
     ];
 
-    // ==============================================================
-    //  BELT LEVEL DEFINITIONS
-    //  color: CSS color for the belt dot indicator
-    // ==============================================================
     const BELT_LEVELS = [
-        { id: 'yellow',     label: 'Yellow Belt',         sub: 'Taegeuk 1-2',      color: '#f1c40f' },
-        { id: 'green',      label: 'Green Belt',          sub: 'Taegeuk 1-4',      color: '#27ae60' },
-        { id: 'blue',       label: 'Blue Belt',           sub: 'Taegeuk 3-6',      color: '#2980b9' },
-        { id: 'red',        label: 'Red Belt',            sub: 'Taegeuk 4-8',      color: '#c0392b' },
-        { id: 'worldclass', label: 'World Class',         sub: 'Black Belt / Dan', color: '#111111' }
+        { id: 'yellow',     label: 'Yellow Belt', sub: 'Taegeuk 1-2',     color: '#f1c40f' },
+        { id: 'green',      label: 'Green Belt',  sub: 'Taegeuk 1-4',     color: '#27ae60' },
+        { id: 'blue',       label: 'Blue Belt',   sub: 'Taegeuk 3-6',     color: '#2980b9' },
+        { id: 'red',        label: 'Red Belt',    sub: 'Taegeuk 4-8',     color: '#c0392b' },
+        { id: 'worldclass', label: 'World Class', sub: 'Black Belt / Dan', color: '#111111' }
     ];
 
-    // ==============================================================
-    //  APP STATE  — tracks current selections and draw results
-    // ==============================================================
+    // All possible bracket rounds in order
+    const ALL_BRACKET_ROUNDS = [
+        { id: 'r64',   label: 'Round of 64',   short: 'R64',   matchCount: 32 },
+        { id: 'r32',   label: 'Round of 32',   short: 'R32',   matchCount: 16 },
+        { id: 'r16',   label: 'Round of 16',   short: 'R16',   matchCount: 8  },
+        { id: 'qf',    label: 'Quarterfinals', short: 'QF',    matchCount: 4  },
+        { id: 'sf',    label: 'Semifinals',    short: 'SF',    matchCount: 2  },
+        { id: 'final', label: 'Finals',        short: 'FIN',   matchCount: 1  }
+    ];
+
+    // ============================================================
+    //  APP STATE
+    // ============================================================
     const state = {
-        age:      null,   // selected age group id  e.g. 'cadet'
-        belt:     null,   // selected belt level id  e.g. 'worldclass'
-        r1:       null,   // poomsae drawn for Round 1
-        r2:       null,   // poomsae drawn for Round 2
-        busy:     false   // true while slot animation is running
+        age:           null,
+        belt:          null,
+        mode:          null,   // 'single' | 'bracket'
+        bracketRounds: [],     // [{id, label, short, matchCount, matches:[{r1,r2,r3},...]}, ...]
+        bracketIdx:    0,      // current round index
+        matchIdx:      0,      // current match index within round
+        r1:            null,
+        r2:            null,
+        r3:            null,
+        busy:          false
     };
 
-    // ==============================================================
-    //  SCREEN NAVIGATION
-    // ==============================================================
-
-    // Show one screen, hide all others
+    // ============================================================
+    //  NAVIGATION
+    // ============================================================
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        // Show the back/fullscreen corner buttons only on the draw screen
-        document.getElementById('btn-back').style.display = (id === 'screen-draw') ? '' : 'none';
+        document.getElementById('btn-back').style.display =
+            (id === 'screen-draw' || id === 'screen-r3') ? '' : 'none';
     }
 
     function goToWelcome() { showScreen('screen-welcome'); }
+    function goToAge()     { buildAgeCards(); showScreen('screen-age'); }
+    function goToBelt()    { buildBeltCards(); showScreen('screen-belt'); }
+    function goBack()      { goToAge(); }
 
-    function goToAge() {
-        buildAgeCards();
-        showScreen('screen-age');
-    }
-
-    function goToBelt() {
-        buildBeltCards();
-        showScreen('screen-belt');
-    }
-
-    // "← Change Division" button on draw screen brings back to age select
-    function goBack() { goToAge(); }
-
-    // ==============================================================
-    //  CARD BUILDERS — dynamically generate selection card HTML
-    // ==============================================================
-
+    // ============================================================
+    //  CARD BUILDERS
+    // ============================================================
     function buildAgeCards() {
         const container = document.getElementById('age-cards');
         container.innerHTML = '';
-
         AGE_GROUPS.forEach(group => {
             const card = document.createElement('div');
             card.className = 'sel-card' + (state.age === group.id ? ' selected' : '');
@@ -544,7 +1099,7 @@
                               <div class="card-sub">${group.sub}</div>`;
             card.addEventListener('click', () => {
                 state.age  = group.id;
-                state.belt = null; // reset belt whenever age changes
+                state.belt = null;
                 goToBelt();
             });
             container.appendChild(card);
@@ -554,7 +1109,6 @@
     function buildBeltCards() {
         const container = document.getElementById('belt-cards');
         container.innerHTML = '';
-
         BELT_LEVELS.forEach(belt => {
             const card = document.createElement('div');
             card.className = 'sel-card' + (state.belt === belt.id ? ' selected' : '');
@@ -563,167 +1117,556 @@
                               <div class="card-sub">${belt.sub}</div>`;
             card.addEventListener('click', () => {
                 state.belt = belt.id;
-                state.r1   = null;
-                state.r2   = null;
-                initDrawScreen();
-                showScreen('screen-draw');
+                showScreen('screen-mode');
             });
             container.appendChild(card);
         });
     }
 
-    // ==============================================================
-    //  DRAW SCREEN INIT  — reset boxes and update labels
-    // ==============================================================
+    // ============================================================
+    //  MODE SELECTION
+    // ============================================================
+    function selectMode(mode) {
+        state.mode = mode;
+        if (mode === 'single') {
+            state.bracketRounds = [];
+            state.bracketIdx    = 0;
+            state.matchIdx      = 0;
+            state.r1 = state.r2 = state.r3 = null;
+            initDrawScreen();
+            showScreen('screen-draw');
+        } else {
+            buildBracketOptions();
+            showScreen('screen-bracket-setup');
+        }
+    }
+
+    function buildBracketOptions() {
+        const container = document.getElementById('bracket-options');
+        container.innerHTML = '';
+        ALL_BRACKET_ROUNDS.forEach(round => {
+            const div = document.createElement('div');
+            div.className = 'bracket-opt';
+            div.innerHTML = `<div class="opt-label">${round.label}</div>
+                             <div class="opt-sub">${round.matchCount} match${round.matchCount > 1 ? 'es' : ''}</div>`;
+            div.addEventListener('click', () => startBracket(round.id));
+            container.appendChild(div);
+        });
+    }
+
+    function startBracket(startRoundId) {
+        const startIdx = ALL_BRACKET_ROUNDS.findIndex(r => r.id === startRoundId);
+        state.bracketRounds = ALL_BRACKET_ROUNDS.slice(startIdx).map(r => ({
+            ...r,
+            matches: Array.from({ length: r.matchCount }, () => ({ r1: null, r2: null, r3: null }))
+        }));
+        state.bracketIdx = 0;
+        state.matchIdx   = 0;
+        state.r1 = state.r2 = state.r3 = null;
+        initDrawScreen();
+        showScreen('screen-draw');
+    }
+
+    // ============================================================
+    //  DRAW POOL — per-match exclusion logic
+    //
+    //  For perfRound 1 or 2:
+    //    Exclude r1+r2+r3 from the TWO previous-round matches that
+    //    feed into the current match (slots 2*matchIdx and 2*matchIdx+1).
+    //  For perfRound 2: also exclude current r1.
+    //  For perfRound 3: also exclude current r1 and r2.
+    //  Fallback to full pool if exclusions empty it.
+    // ============================================================
+    function getDrawPool(perfRound) {
+        const full     = POOLS[state.age][state.belt];
+        const excluded = new Set();
+
+        if (state.mode === 'bracket' && state.bracketIdx > 0) {
+            const prevRound  = state.bracketRounds[state.bracketIdx - 1];
+            const feedA      = prevRound.matches[state.matchIdx * 2];
+            const feedB      = prevRound.matches[state.matchIdx * 2 + 1];
+            [feedA, feedB].forEach(m => {
+                if (!m) return;
+                if (m.r1) excluded.add(m.r1);
+                if (m.r2) excluded.add(m.r2);
+                if (m.r3) excluded.add(m.r3);
+            });
+        }
+
+        if (perfRound >= 2 && state.r1) excluded.add(state.r1);
+        if (perfRound >= 3 && state.r2) excluded.add(state.r2);
+
+        const available = full.filter(p => !excluded.has(p));
+        return available.length > 0 ? available : [...full];
+    }
+
+    // ============================================================
+    //  DRAW SCREEN INIT
+    // ============================================================
     function initDrawScreen() {
         const ageInfo  = AGE_GROUPS.find(a => a.id === state.age);
         const beltInfo = BELT_LEVELS.find(b => b.id === state.belt);
         const pool     = POOLS[state.age][state.belt];
 
-        // Update the division badge at the top
         document.getElementById('division-badge').textContent =
             `${ageInfo.label}  •  ${beltInfo.label}`;
 
-        // Show the poomsae pool as a hint below each box
+        const stageLabel   = document.getElementById('bracket-stage-label');
+        const matchCounter = document.getElementById('match-counter');
+
+        if (state.mode === 'bracket' && state.bracketRounds.length > 0) {
+            const round = state.bracketRounds[state.bracketIdx];
+            stageLabel.textContent   = round.label;
+            stageLabel.style.display = '';
+            if (round.matchCount > 1) {
+                matchCounter.textContent   = `Match ${state.matchIdx + 1} of ${round.matchCount}`;
+                matchCounter.style.display = '';
+            } else {
+                matchCounter.style.display = 'none';
+            }
+        } else {
+            stageLabel.style.display   = 'none';
+            matchCounter.style.display = 'none';
+        }
+
         const poolText = 'Pool: ' + pool.join(', ');
         document.getElementById('hint-r1').textContent = poolText;
         document.getElementById('hint-r2').textContent = poolText;
 
-        // Reset both result boxes to the "Press Draw" state
+        refreshExclHints();
+
         clearBox('box-r1');
         clearBox('box-r2');
 
-        // Round 1 starts enabled; Round 2 locked until Round 1 is drawn
         setBtn('btn-r1', true);
         setBtn('btn-r2', false);
+        setBtn('btn-r3', false);
+
+        document.getElementById('btn-advance').style.display = 'none';
+        document.getElementById('complete-banner').classList.remove('visible');
+
+        const btnBracket = document.getElementById('btn-view-bracket');
+        btnBracket.style.display = state.mode === 'bracket' ? '' : 'none';
     }
 
-    // Clear a result box back to placeholder appearance
+    // ============================================================
+    //  EXCLUSION HINTS
+    // ============================================================
+    function refreshExclHints() {
+        const prevExcl = [];
+
+        if (state.mode === 'bracket' && state.bracketIdx > 0) {
+            const prev  = state.bracketRounds[state.bracketIdx - 1];
+            const feedA = prev.matches[state.matchIdx * 2];
+            const feedB = prev.matches[state.matchIdx * 2 + 1];
+            [feedA, feedB].forEach(m => {
+                if (!m) return;
+                if (m.r1) prevExcl.push(m.r1);
+                if (m.r2) prevExcl.push(m.r2);
+                if (m.r3) prevExcl.push(m.r3);
+            });
+        }
+
+        document.getElementById('excl-r1').textContent =
+            prevExcl.length ? 'Excluded (prev. matches): ' + [...new Set(prevExcl)].join(', ') : '';
+
+        const r2Excl = [...new Set([...prevExcl, ...(state.r1 ? [state.r1] : [])])];
+        document.getElementById('excl-r2').textContent =
+            r2Excl.length ? 'Excluded: ' + r2Excl.join(', ') : '';
+    }
+
+    // ============================================================
+    //  HELPERS
+    // ============================================================
     function clearBox(id) {
         const box = document.getElementById(id);
-        box.classList.remove('spinning', 'revealed');
+        box.classList.remove('revealed');
         box.innerHTML = '<span class="placeholder-text">Press Draw</span>';
     }
 
-    // Enable or disable a button
     function setBtn(id, enabled) {
-        const btn = document.getElementById(id);
-        btn.disabled = !enabled;
+        document.getElementById(id).disabled = !enabled;
     }
 
-    // ==============================================================
-    //  RESET DRAWS  — clears results but keeps the same division
-    // ==============================================================
-    function resetDraws() {
-        state.r1 = null;
-        state.r2 = null;
-        initDrawScreen();
-    }
+    // ============================================================
+    //  RESET CURRENT DRAW
+    // ============================================================
+    function resetCurrentDraw() {
+        state.r1 = state.r2 = state.r3 = null;
 
-    // ==============================================================
-    //  DRAW LOGIC  — slot-machine reveal animation
-    //
-    //  How it works:
-    //    1. Pick a random poomsae from the pool for this round.
-    //    2. Rapidly flash random names from the pool (slot effect).
-    //    3. Gradually slow down the flashing.
-    //    4. Land on the chosen name with a pop animation.
-    //
-    //  Round 2 is guaranteed to differ from Round 1 (if pool allows).
-    // ==============================================================
-    function drawRound(round) {
-        if (state.busy) return;  // ignore clicks during animation
-        state.busy = true;
-
-        const pool   = POOLS[state.age][state.belt];
-        const boxId  = round === 1 ? 'box-r1' : 'box-r2';
-        const box    = document.getElementById(boxId);
-
-        // Pick the final poomsae; ensure Round 2 ≠ Round 1 when possible
-        let chosen;
-        do {
-            chosen = pool[Math.floor(Math.random() * pool.length)];
-        } while (round === 2 && pool.length > 1 && chosen === state.r1);
-
-        // Lock both buttons during animation
-        setBtn('btn-r1', false);
-        setBtn('btn-r2', false);
-
-        // Start spinning appearance
-        box.classList.remove('revealed');
-        box.classList.add('spinning');
-        box.textContent = pool[0]; // show something immediately
-
-        let count = 0;
-        const TOTAL = 28; // total frames before landing
-
-        // Recursive setTimeout lets us change delay each frame
-        function frame() {
-            // Flash a random name from the pool
-            box.textContent = pool[Math.floor(Math.random() * pool.length)];
-            count++;
-
-            // Calculate next delay: fast → medium → slow
-            let delay;
-            if      (count < TOTAL * 0.45) delay = 75;   // fast phase
-            else if (count < TOTAL * 0.70) delay = 130;  // medium phase
-            else if (count < TOTAL * 0.88) delay = 220;  // slow phase
-            else                           delay = 370;  // dramatic last frames
-
-            if (count >= TOTAL) {
-                // ---- FINAL REVEAL ----
-                box.textContent = chosen;
-                box.classList.remove('spinning');
-                box.classList.add('revealed');
-
-                // Save result to state
-                if (round === 1) {
-                    state.r1 = chosen;
-                    setBtn('btn-r2', true);  // unlock Round 2
-                    // Round 1 stays locked — no re-draws after reveal
-                } else {
-                    state.r2 = chosen;
-                    // Both rounds done — both stay locked until reset
-                }
-
-                state.busy = false;
-                return;
-            }
-
-            setTimeout(frame, delay);
+        if (state.mode === 'bracket' && state.bracketRounds.length > 0) {
+            const match = state.bracketRounds[state.bracketIdx].matches[state.matchIdx];
+            match.r1 = match.r2 = match.r3 = null;
         }
 
-        setTimeout(frame, 75);
+        clearBox('box-r1');
+        clearBox('box-r2');
+        setBtn('btn-r1', true);
+        setBtn('btn-r2', false);
+        setBtn('btn-r3', false);
+        document.getElementById('btn-advance').style.display = 'none';
+        document.getElementById('complete-banner').classList.remove('visible');
+        refreshExclHints();
     }
 
-    // ==============================================================
-    //  KEYBOARD SHORTCUTS  (draw screen only)
-    //    Space / Enter → next available draw
-    //    R             → reset draws
-    // ==============================================================
+    // ============================================================
+    //  SKIP MATCH — mark current match as skipped, advance
+    // ============================================================
+    function skipMatch() {
+        if (state.mode !== 'bracket') return;
+        // Mark as explicitly skipped so exclusion logic knows to ignore it
+        const match = state.bracketRounds[state.bracketIdx].matches[state.matchIdx];
+        match.r1 = match.r2 = match.r3 = null;
+        match.skipped = true;
+        state.r1 = state.r2 = state.r3 = null;
+        advanceMatch();
+    }
+
+    // ============================================================
+    //  ADVANCE — next match within round, then next round
+    // ============================================================
+    function advanceMatch() {
+        const round = state.bracketRounds[state.bracketIdx];
+
+        if (state.matchIdx < round.matchCount - 1) {
+            // More matches remain in this round
+            state.matchIdx++;
+            state.r1 = state.r2 = state.r3 = null;
+            initDrawScreen();
+            document.getElementById('screen-draw').scrollTop = 0;
+        } else if (state.bracketIdx < state.bracketRounds.length - 1) {
+            // All matches done — move to next round
+            state.bracketIdx++;
+            state.matchIdx = 0;
+            state.r1 = state.r2 = state.r3 = null;
+            initDrawScreen();
+            document.getElementById('screen-draw').scrollTop = 0;
+        }
+    }
+
+    // ============================================================
+    //  VISUAL BRACKET RENDERER
+    // ============================================================
+    function renderBracketVisual() {
+        const vis = document.getElementById('bracket-visual');
+        vis.innerHTML = '';
+        if (!state.bracketRounds.length) return;
+
+        const rounds     = state.bracketRounds;
+        const numRounds  = rounds.length;
+        const firstCount = rounds[0].matchCount;
+
+        // slotH = pixel height per entry in the outermost round on each side
+        const slotH = Math.max(56, Math.min(90, Math.round(400 / (firstCount / 2))));
+
+        // ---- helpers ------------------------------------------------
+
+        function makeMatchBox(round, mIdx, match) {
+            const isCurrent   = round === rounds[state.bracketIdx] && mIdx === state.matchIdx;
+            const isCompleted = !!(match.r1 && match.r2);
+            const isSkipped   = !!match.skipped;
+            const box = document.createElement('div');
+            box.className = 'bv-match-box ' +
+                (isCurrent  ? 'current'  :
+                 isSkipped  ? 'skipped'  :
+                 isCompleted ? 'done'    : 'pending');
+            box.innerHTML =
+                `<div class="bv-match-num">${round.short} \u00b7 M${mIdx + 1}</div>` +
+                (isSkipped
+                    ? `<div class="bv-poomsae bv-r1" style="opacity:0.35;font-style:italic">skipped</div>`
+                    : `<div class="bv-poomsae bv-r1">${match.r1 || '\u2014'}</div>` +
+                      `<div class="bv-poomsae bv-r2">${match.r2 || '\u2014'}</div>` +
+                      (match.r3 ? `<div class="bv-poomsae bv-r3">R3: ${match.r3}</div>` : ''));
+            return box;
+        }
+
+        function makeEntry(round, mIdx, match, entryH, ...connClasses) {
+            const entry = document.createElement('div');
+            entry.className = 'bv-entry';
+            entry.style.height = entryH + 'px';
+            connClasses.forEach(c => entry.classList.add(c));
+            entry.appendChild(makeMatchBox(round, mIdx, match));
+            return entry;
+        }
+
+        function makeCol(label, isRtl, isFinal) {
+            const col = document.createElement('div');
+            col.className = 'bv-col' +
+                (isRtl   ? ' bv-col-rtl'   : '') +
+                (isFinal ? ' bv-col-final'  : '');
+            const hdr = document.createElement('div');
+            hdr.className    = 'bv-col-header';
+            hdr.textContent  = label;
+            col.appendChild(hdr);
+            return col;
+        }
+
+        // ---- Special case: only Final --------------------------------
+        if (numRounds === 1) {
+            const fr  = rounds[0];
+            const col = makeCol('Final', false, true);
+            col.appendChild(makeEntry(fr, 0, fr.matches[0], slotH * 2, 'final-entry'));
+            const badge = document.createElement('div');
+            badge.className   = 'champion-badge';
+            badge.textContent = '\u2605 Champion \u2605';
+            col.appendChild(badge);
+            vis.appendChild(col);
+            return;
+        }
+
+        // ---- Left side: rounds[0..N-2], first half of matches --------
+        const leftSide = document.createElement('div');
+        leftSide.className = 'bracket-half';
+
+        for (let rIdx = 0; rIdx < numRounds - 1; rIdx++) {
+            const round     = rounds[rIdx];
+            const halfCount = round.matchCount / 2;
+            // entryH scales so total height = (firstCount/2)*slotH for every column
+            const entryH    = ((firstCount / 2) / halfCount) * slotH;
+            const isInner   = rIdx === numRounds - 2; // last non-final round → touches Final
+            const col       = makeCol(round.label, false, false);
+
+            for (let mIdx = 0; mIdx < halfCount; mIdx++) {
+                const connClasses = [];
+                // Right-side connector: bracket shape (pair) or direct line to Final
+                if (isInner) connClasses.push('connects-to-final');
+                else         connClasses.push(mIdx % 2 === 0 ? 'pair-top' : 'pair-bottom');
+                // Left-side feed line from previous round
+                if (rIdx > 0) connClasses.push('has-connector');
+                col.appendChild(makeEntry(round, mIdx, round.matches[mIdx], entryH, ...connClasses));
+            }
+            leftSide.appendChild(col);
+        }
+
+        // ---- Final (center) ------------------------------------------
+        const finalRound  = rounds[numRounds - 1];
+        const finalEntryH = (firstCount / 2) * slotH; // same height as side columns
+        const finalCol    = makeCol('Final', false, true);
+        finalCol.appendChild(makeEntry(finalRound, 0, finalRound.matches[0], finalEntryH, 'final-entry'));
+        const badge = document.createElement('div');
+        badge.className   = 'champion-badge';
+        badge.textContent = '\u2605 Champion \u2605';
+        finalCol.appendChild(badge);
+
+        // ---- Right side: rounds[N-2..0] reversed, second half of matches ----
+        const rightSide = document.createElement('div');
+        rightSide.className = 'bracket-half';
+
+        // Loop from innermost non-final round outward so columns appear SF→QF→R16
+        for (let rIdx = numRounds - 2; rIdx >= 0; rIdx--) {
+            const round     = rounds[rIdx];
+            const halfCount = round.matchCount / 2;
+            const entryH    = ((firstCount / 2) / halfCount) * slotH;
+            const isInner   = rIdx === numRounds - 2;
+            const col       = makeCol(round.label, true, false);
+
+            for (let mIdx = halfCount; mIdx < round.matchCount; mIdx++) {
+                const localIdx    = mIdx - halfCount; // 0-based within right half
+                const connClasses = [];
+                // Left-side connector (toward Final or inner round)
+                if (isInner) connClasses.push('connects-to-final-rtl');
+                else         connClasses.push(localIdx % 2 === 0 ? 'pair-top' : 'pair-bottom');
+                // Right-side feed line from outer round (in RTL, this comes from the right)
+                if (rIdx > 0) connClasses.push('has-connector');
+                col.appendChild(makeEntry(round, mIdx, round.matches[mIdx], entryH, ...connClasses));
+            }
+            rightSide.appendChild(col);
+        }
+
+        // ---- Assemble ------------------------------------------------
+        vis.appendChild(leftSide);
+        vis.appendChild(finalCol);
+        vis.appendChild(rightSide);
+    }
+
+    // ============================================================
+    //  DRAW LOGIC
+    // ============================================================
+    function drawPerf(perfRound) {
+        if (state.busy) return;
+
+        const pool   = getDrawPool(perfRound);
+        const chosen = pool[Math.floor(Math.random() * pool.length)];
+        const boxId  = perfRound === 1 ? 'box-r1' : 'box-r2';
+        const box    = document.getElementById(boxId);
+
+        box.classList.add('revealed');
+        box.textContent = chosen;
+
+        document.getElementById('btn-advance').style.display = 'none';
+
+        if (perfRound === 1) {
+            state.r1 = chosen;
+            if (state.mode === 'bracket')
+                state.bracketRounds[state.bracketIdx].matches[state.matchIdx].r1 = chosen;
+            refreshExclHints();
+            setBtn('btn-r2', true);
+
+        } else {
+            state.r2 = chosen;
+            if (state.mode === 'bracket') {
+                state.bracketRounds[state.bracketIdx].matches[state.matchIdx].r2 = chosen;
+
+
+                const round        = state.bracketRounds[state.bracketIdx];
+                const isLastMatch  = state.matchIdx >= round.matchCount - 1;
+                const isLastRound  = state.bracketIdx >= state.bracketRounds.length - 1;
+
+                if (isLastMatch && isLastRound) {
+                    document.getElementById('complete-banner').classList.add('visible');
+                } else {
+                    document.getElementById('btn-advance').style.display = '';
+                    // Update advance button label
+                    const nextIsNewRound = isLastMatch && !isLastRound;
+                    document.getElementById('btn-advance').textContent =
+                        nextIsNewRound
+                            ? 'Next Round \u2192'
+                            : `Next Match (M${state.matchIdx + 2}) \u2192`;
+                }
+            }
+            // Enable R3 once R1 and R2 are drawn
+            setBtn('btn-r3', true);
+        }
+    }
+
+    // ============================================================
+    //  ROUND 3 SCREEN
+    // ============================================================
+    function goToR3() {
+        const ageInfo  = AGE_GROUPS.find(a => a.id === state.age);
+        const beltInfo = BELT_LEVELS.find(b => b.id === state.belt);
+        const pool     = POOLS[state.age][state.belt];
+
+        let context = `${ageInfo.label} · ${beltInfo.label}`;
+        if (state.mode === 'bracket' && state.bracketRounds.length) {
+            const round = state.bracketRounds[state.bracketIdx];
+            context += ` · ${round.label}`;
+            if (round.matchCount > 1) context += ` · Match ${state.matchIdx + 1}`;
+        }
+        document.getElementById('r3-context').textContent = context;
+
+        // Show existing R3 result if already drawn
+        const box = document.getElementById('box-r3');
+        const existingR3 = state.mode === 'bracket' && state.bracketRounds.length
+            ? state.bracketRounds[state.bracketIdx].matches[state.matchIdx].r3
+            : state.r3;
+
+        if (existingR3) {
+            box.classList.add('revealed');
+            box.textContent = existingR3;
+            setBtn('btn-draw-r3', false);
+        } else {
+            clearBox('box-r3');
+            setBtn('btn-draw-r3', true);
+        }
+
+        // Pool hint
+        document.getElementById('hint-r3').textContent = 'Pool: ' + pool.join(', ');
+
+        // Exclusion hint: r1, r2 of this match + previous-match exclusions
+        const excl = new Set();
+        if (state.r1) excl.add(state.r1);
+        if (state.r2) excl.add(state.r2);
+        if (state.mode === 'bracket' && state.bracketIdx > 0) {
+            const prev  = state.bracketRounds[state.bracketIdx - 1];
+            const feedA = prev.matches[state.matchIdx * 2];
+            const feedB = prev.matches[state.matchIdx * 2 + 1];
+            [feedA, feedB].forEach(m => {
+                if (!m) return;
+                if (m.r1) excl.add(m.r1);
+                if (m.r2) excl.add(m.r2);
+                if (m.r3) excl.add(m.r3);
+            });
+        }
+        document.getElementById('excl-r3').textContent =
+            excl.size ? 'Excluded: ' + [...excl].join(', ') : '';
+
+        showScreen('screen-r3');
+    }
+
+    function drawR3() {
+        const pool   = getDrawPool(3);
+        const chosen = pool[Math.floor(Math.random() * pool.length)];
+        const box    = document.getElementById('box-r3');
+
+        box.classList.add('revealed');
+        box.textContent = chosen;
+        setBtn('btn-draw-r3', false);
+
+        state.r3 = chosen;
+        if (state.mode === 'bracket' && state.bracketRounds.length) {
+            state.bracketRounds[state.bracketIdx].matches[state.matchIdx].r3 = chosen;
+        }
+    }
+
+    function backFromR3() {
+        showScreen('screen-draw');
+    }
+
+    // ============================================================
+    //  DOWNLOAD — serialise current DOM as a standalone HTML file
+    // ============================================================
+    function downloadApp() {
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([html], { type: 'text/html' });
+        const a    = document.createElement('a');
+        a.href     = URL.createObjectURL(blob);
+        a.download = 'poomsae-draw.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    // ============================================================
+    //  KEYBOARD SHORTCUTS
+    //    Space / Enter  → next draw
+    //    R              → reset current draw
+    //    N              → next match / round
+    //    3              → open round 3
+    // ============================================================
     document.addEventListener('keydown', e => {
         const onDraw = document.getElementById('screen-draw').classList.contains('active');
         if (!onDraw) return;
 
         if (e.key === ' ' || e.key === 'Enter') {
-            e.preventDefault();  // prevent page scroll on Space
-            if (!state.r1) drawRound(1);
-            else if (!state.r2) drawRound(2);
+            e.preventDefault();
+            if (!state.r1) drawPerf(1);
+            else if (!state.r2) drawPerf(2);
         }
         if (e.key === 'r' || e.key === 'R') {
-            resetDraws();
+            resetCurrentDraw();
+        }
+        if (e.key === 'n' || e.key === 'N') {
+            const btn = document.getElementById('btn-advance');
+            if (btn.style.display !== 'none') advanceMatch();
+        }
+        if (e.key === '3') {
+            const btn = document.getElementById('btn-r3');
+            if (!btn.disabled) goToR3();
         }
     });
 
-    // ==============================================================
-    //  FULLSCREEN TOGGLE  — for TV / projector display
-    // ==============================================================
+    // ============================================================
+    //  FULLSCREEN
+    // ============================================================
+    // ============================================================
+    //  BRACKET SCREEN NAVIGATION
+    // ============================================================
+    function showBracketScreen() {
+        const ageInfo  = AGE_GROUPS.find(a => a.id === state.age);
+        const beltInfo = BELT_LEVELS.find(b => b.id === state.belt);
+        document.getElementById('bracket-screen-division').textContent =
+            ageInfo.label + '  •  ' + beltInfo.label;
+        renderBracketVisual();
+        showScreen('screen-bracket');
+    }
+
+    function backToDraw() {
+        showScreen('screen-draw');
+    }
+
     function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
     }
 
 </script>
