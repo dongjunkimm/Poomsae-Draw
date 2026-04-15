@@ -46,7 +46,7 @@
         }
         .screen.active { display: flex; }
 
-        #screen-draw {
+        #screen-draw, #screen-r3 {
             justify-content: flex-start;
             align-items: stretch;
             padding: 12px 24px 10px;
@@ -392,6 +392,12 @@
             box-shadow: 0 0 60px rgba(231,76,60,0.6);
             font-size: clamp(6rem, 16vw, 20rem);
             animation: pop 0.35s ease;
+        }
+        .result-box.rolling {
+            font-size: clamp(2rem, 4vw, 4.5rem);
+            color: rgba(255,255,255,0.65);
+            border-color: rgba(255,255,255,0.3);
+            letter-spacing: 2px;
         }
         @keyframes pop {
             0%   { transform: scale(0.96); }
@@ -898,7 +904,7 @@
             <div class="excl-hint" id="excl-r1"></div>
         </div>
 
-        <div class="round-col">
+        <div class="round-col" id="round2-col">
             <div class="round-label">Round 2</div>
             <div class="result-box" id="box-r2">
                 <span class="placeholder-text">Press Draw</span>
@@ -947,19 +953,19 @@
 ============================================================ -->
 <div class="screen" id="screen-r3">
 
-    <div class="r3-context" id="r3-context">—</div>
-    <div class="r3-heading">Round 3 — Tiebreak Draw</div>
+    <div class="division-badge" id="r3-context">—</div>
+    <div class="bracket-stage-label" style="display:block">Round 3 — Tiebreak</div>
 
-    <div class="r3-draw-col">
-        <div class="result-box" id="box-r3">
-            <span class="placeholder-text">Press Draw</span>
+    <div class="rounds-row">
+        <div class="round-col">
+            <div class="result-box" id="box-r3">
+                <span class="placeholder-text">Press Draw</span>
+            </div>
         </div>
-        <div class="pool-hint" id="hint-r3"></div>
-        <div class="excl-hint" id="excl-r3"></div>
-        <button class="btn-primary" id="btn-draw-r3" onclick="drawR3()">Draw Round 3</button>
     </div>
 
-    <div class="draw-actions" style="margin-top:30px">
+    <div class="draw-actions">
+        <button class="btn-primary" id="btn-draw-r3" onclick="drawR3()">Draw Round 3</button>
         <button class="btn-ghost" onclick="backFromR3()" style="margin-top:0">← Back to Match</button>
     </div>
 
@@ -1000,8 +1006,7 @@
             green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
             blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
             red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
-            worldclass: ['Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5',
-                         'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8', 'Koryo']
+            worldclass: ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8', 'Koryo', 'Keumgang']
         },
         cadet: {
             yellow:     ['Taegeuk 1', 'Taegeuk 2'],
@@ -1016,16 +1021,16 @@
             green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
             blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
             red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
-            worldclass: ['Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8',
-                         'Koryo', 'Keumgang', 'Taebaek', 'Pyongwon', 'Sipjin']
+            worldclass: ['Taegeuk 7', 'Taegeuk 8',
+                         'Koryo', 'Keumgang', 'Taebaek', 'Pyongwon', 'Sipjin', 'Jitae']
         },
         senior2: {
             yellow:     ['Taegeuk 1', 'Taegeuk 2'],
             green:      ['Taegeuk 1', 'Taegeuk 2', 'Taegeuk 3', 'Taegeuk 4'],
             blue:       ['Taegeuk 3', 'Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6'],
             red:        ['Taegeuk 4', 'Taegeuk 5', 'Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8'],
-            worldclass: ['Taegeuk 6', 'Taegeuk 7', 'Taegeuk 8',
-                         'Koryo', 'Keumgang', 'Taebaek', 'Pyongwon', 'Sipjin']
+            worldclass: ['Taegeuk 7', 'Taegeuk 8',
+                         'Koryo', 'Keumgang', 'Taebaek', 'Pyongwon', 'Sipjin', 'Jitae']
         },
         master: {
             yellow:     ['Taegeuk 1', 'Taegeuk 2'],
@@ -1191,6 +1196,14 @@
     }
 
     // ============================================================
+    //  PRE-QF HELPER — rounds before Quarterfinals draw only 1 poomsae
+    // ============================================================
+    function isPreQF() {
+        if (state.mode !== 'bracket' || !state.bracketRounds.length) return false;
+        return ['r64', 'r32', 'r16'].includes(state.bracketRounds[state.bracketIdx].id);
+    }
+
+    // ============================================================
     //  DRAW POOL — per-match exclusion logic
     //
     //  For perfRound 1 or 2:
@@ -1259,6 +1272,10 @@
         document.getElementById('hint-r1').textContent = poolText;
         document.getElementById('hint-r2').textContent = poolText;
 
+        // Show Round 2 only from QF onwards; pre-QF rounds use a single poomsae
+        const preQF = isPreQF();
+        document.getElementById('round2-col').style.display = preQF ? 'none' : '';
+
         refreshExclHints();
 
         clearBox('box-r1');
@@ -1305,8 +1322,38 @@
     // ============================================================
     function clearBox(id) {
         const box = document.getElementById(id);
-        box.classList.remove('revealed');
+        box.classList.remove('revealed', 'rolling');
         box.innerHTML = '<span class="placeholder-text">Press Draw</span>';
+    }
+
+    // Rolling slot-machine animation, then reveal finalValue
+    function rollDraw(boxId, pool, finalValue, onComplete) {
+        const box      = document.getElementById(boxId);
+        const duration = 1800;
+        const start    = performance.now();
+
+        box.classList.remove('revealed', 'rolling');
+        box.classList.add('rolling');
+        box.innerHTML = '';
+
+        function tick() {
+            const elapsed  = performance.now() - start;
+            const progress = Math.min(elapsed / duration, 1);
+
+            if (progress >= 1) {
+                box.classList.remove('rolling');
+                box.textContent = finalValue;
+                box.classList.add('revealed');
+                if (onComplete) onComplete();
+                return;
+            }
+
+            box.textContent = pool[Math.floor(Math.random() * pool.length)];
+            // Delay eases from 50 ms → 400 ms (quadratic) for a natural slow-down
+            setTimeout(tick, 50 + progress * progress * 350);
+        }
+
+        tick();
     }
 
     function setBtn(id, enabled) {
@@ -1317,6 +1364,7 @@
     //  RESET CURRENT DRAW
     // ============================================================
     function resetCurrentDraw() {
+        state.busy = false;  // cancel any in-flight animation callbacks
         state.r1 = state.r2 = state.r3 = null;
 
         if (state.mode === 'bracket' && state.bracketRounds.length > 0) {
@@ -1386,9 +1434,10 @@
         // ---- helpers ------------------------------------------------
 
         function makeMatchBox(round, mIdx, match) {
-            const isCurrent   = round === rounds[state.bracketIdx] && mIdx === state.matchIdx;
-            const isCompleted = !!(match.r1 && match.r2);
-            const isSkipped   = !!match.skipped;
+            const isCurrent     = round === rounds[state.bracketIdx] && mIdx === state.matchIdx;
+            const isPreQFRound  = ['r64', 'r32', 'r16'].includes(round.id);
+            const isCompleted   = isPreQFRound ? !!match.r1 : !!(match.r1 && match.r2);
+            const isSkipped     = !!match.skipped;
             const box = document.createElement('div');
             box.className = 'bv-match-box ' +
                 (isCurrent  ? 'current'  :
@@ -1399,8 +1448,10 @@
                 (isSkipped
                     ? `<div class="bv-poomsae bv-r1" style="opacity:0.35;font-style:italic">skipped</div>`
                     : `<div class="bv-poomsae bv-r1">${match.r1 || '\u2014'}</div>` +
-                      `<div class="bv-poomsae bv-r2">${match.r2 || '\u2014'}</div>` +
-                      (match.r3 ? `<div class="bv-poomsae bv-r3">R3: ${match.r3}</div>` : ''));
+                      (!isPreQFRound
+                          ? `<div class="bv-poomsae bv-r2">${match.r2 || '\u2014'}</div>` +
+                            (match.r3 ? `<div class="bv-poomsae bv-r3">R3: ${match.r3}</div>` : '')
+                          : ''));
             return box;
         }
 
@@ -1511,48 +1562,57 @@
         state.busy = true;
         setBtn('btn-draw-both', false);
 
-        // Pick both results (R2 excludes R1)
+        const preQF = isPreQF();
+
+        // Pick values before animation starts (R2 excludes R1)
         const pool1   = getDrawPool(1);
         const chosen1 = pool1[Math.floor(Math.random() * pool1.length)];
-        state.r1 = chosen1;
-        const pool2   = getDrawPool(2);
-        const chosen2 = pool2[Math.floor(Math.random() * pool2.length)];
+        state.r1 = chosen1;  // set now so getDrawPool(2) can exclude it
 
-        // Reveal both immediately
-        const box1 = document.getElementById('box-r1');
-        const box2 = document.getElementById('box-r2');
-        box1.classList.remove('revealed');
-        box2.classList.remove('revealed');
-        box1.textContent = chosen1;
-        box1.classList.add('revealed');
-        box2.textContent = chosen2;
-        box2.classList.add('revealed');
-
-        state.r2 = chosen2;
-
-        if (state.mode === 'bracket') {
-            state.bracketRounds[state.bracketIdx].matches[state.matchIdx].r1 = chosen1;
-            state.bracketRounds[state.bracketIdx].matches[state.matchIdx].r2 = chosen2;
-
-            const round       = state.bracketRounds[state.bracketIdx];
-            const isLastMatch = state.matchIdx >= round.matchCount - 1;
-            const isLastRound = state.bracketIdx >= state.bracketRounds.length - 1;
-
-            if (isLastMatch && isLastRound) {
-                document.getElementById('complete-banner').classList.add('visible');
-            } else {
-                document.getElementById('btn-advance').style.display = '';
-                const nextIsNewRound = isLastMatch && !isLastRound;
-                document.getElementById('btn-advance').textContent =
-                    nextIsNewRound
-                        ? 'Next Round \u2192'
-                        : `Next Match (M${state.matchIdx + 2}) \u2192`;
-            }
+        let pool2 = null, chosen2 = null;
+        if (!preQF) {
+            pool2   = getDrawPool(2);
+            chosen2 = pool2[Math.floor(Math.random() * pool2.length)];
+            state.r2 = chosen2;
         }
 
-        refreshExclHints();
-        setBtn('btn-r3', true);
-        state.busy = false;
+        // Track when all animations complete
+        const needed = preQF ? 1 : 2;
+        let doneCount = 0;
+
+        function onOneDone() {
+            doneCount++;
+            if (doneCount < needed) return;
+
+            // Save to bracket state
+            if (state.mode === 'bracket') {
+                state.bracketRounds[state.bracketIdx].matches[state.matchIdx].r1 = chosen1;
+                if (!preQF) state.bracketRounds[state.bracketIdx].matches[state.matchIdx].r2 = chosen2;
+
+                const round       = state.bracketRounds[state.bracketIdx];
+                const isLastMatch = state.matchIdx >= round.matchCount - 1;
+                const isLastRound = state.bracketIdx >= state.bracketRounds.length - 1;
+
+                if (isLastMatch && isLastRound) {
+                    document.getElementById('complete-banner').classList.add('visible');
+                } else {
+                    document.getElementById('btn-advance').style.display = '';
+                    const nextIsNewRound = isLastMatch && !isLastRound;
+                    document.getElementById('btn-advance').textContent =
+                        nextIsNewRound
+                            ? 'Next Round \u2192'
+                            : `Next Match (M${state.matchIdx + 2}) \u2192`;
+                }
+            }
+
+            refreshExclHints();
+            if (!preQF) setBtn('btn-r3', true);
+            state.busy = false;
+        }
+
+        // Start animations simultaneously
+        rollDraw('box-r1', pool1, chosen1, onOneDone);
+        if (!preQF) rollDraw('box-r2', pool2, chosen2, onOneDone);
     }
 
     // ============================================================
@@ -1587,43 +1647,20 @@
             setBtn('btn-draw-r3', true);
         }
 
-        // Pool hint
-        document.getElementById('hint-r3').textContent = 'Pool: ' + pool.join(', ');
-
-        // Exclusion hint: r1, r2 of this match + previous-match exclusions
-        const excl = new Set();
-        if (state.r1) excl.add(state.r1);
-        if (state.r2) excl.add(state.r2);
-        if (state.mode === 'bracket' && state.bracketIdx > 0) {
-            const prev  = state.bracketRounds[state.bracketIdx - 1];
-            const feedA = prev.matches[state.matchIdx * 2];
-            const feedB = prev.matches[state.matchIdx * 2 + 1];
-            [feedA, feedB].forEach(m => {
-                if (!m) return;
-                if (m.r1) excl.add(m.r1);
-                if (m.r2) excl.add(m.r2);
-                if (m.r3) excl.add(m.r3);
-            });
-        }
-        document.getElementById('excl-r3').textContent =
-            excl.size ? 'Excluded: ' + [...excl].join(', ') : '';
-
         showScreen('screen-r3');
     }
 
     function drawR3() {
         const pool   = getDrawPool(3);
         const chosen = pool[Math.floor(Math.random() * pool.length)];
-        const box    = document.getElementById('box-r3');
-
-        box.classList.add('revealed');
-        box.textContent = chosen;
         setBtn('btn-draw-r3', false);
 
-        state.r3 = chosen;
-        if (state.mode === 'bracket' && state.bracketRounds.length) {
-            state.bracketRounds[state.bracketIdx].matches[state.matchIdx].r3 = chosen;
-        }
+        rollDraw('box-r3', pool, chosen, () => {
+            state.r3 = chosen;
+            if (state.mode === 'bracket' && state.bracketRounds.length) {
+                state.bracketRounds[state.bracketIdx].matches[state.matchIdx].r3 = chosen;
+            }
+        });
     }
 
     function backFromR3() {
